@@ -3,10 +3,27 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
-export default function FlipCard({ title, description, link, image, onClick }) {
+export default function FlipCard({
+  title,
+  description,
+  link,
+  image,
+  usesAPI,
+  onClick,
+}) {
   const [hovered, setHovered] = useState(false);
   const [showLargeImage, setShowLargeImage] = useState(false);
   const [hoverTimer, setHoverTimer] = useState(null);
+
+  const handleClick = () => {
+    if (usesAPI) {
+      // Ouvrir directement dans un nouvel onglet pour les projets avec API
+      window.open(link, "_blank", "noopener,noreferrer");
+    } else {
+      // Utiliser le modal pour les projets sans API
+      onClick();
+    }
+  };
 
   const handleHoverStart = () => {
     setHovered(true);
@@ -67,7 +84,7 @@ export default function FlipCard({ title, description, link, image, onClick }) {
         style={{ perspective: "1000px" }}
         onHoverStart={handleHoverStart}
         onHoverEnd={handleHoverEnd}
-        onClick={onClick}
+        onClick={handleClick}
       >
         <motion.div
           className="absolute w-full h-full rounded-xl shadow-lg"
