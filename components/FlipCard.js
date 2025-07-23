@@ -94,22 +94,10 @@ export default function FlipCard({
           }}
           transition={{ duration: 0.6 }}
         >
-          {/* Front - Titre et description */}
-          <div
-            className="absolute w-full h-full rounded-xl overflow-hidden bg-gradient-to-br from-indigo-600 to-purple-700 text-white flex flex-col items-center justify-center p-4"
-            style={{ backfaceVisibility: "hidden" }}
-          >
-            <h3 className="text-xl font-bold text-center mb-2">{title}</h3>
-            <p className="text-sm text-center opacity-90">{description}</p>
-          </div>
-
-          {/* Back - Image */}
+          {/* Front - Image (inversé) */}
           <div
             className="absolute w-full h-full rounded-xl bg-white flex items-center justify-center overflow-hidden"
-            style={{
-              backfaceVisibility: "hidden",
-              transform: "rotateY(180deg)",
-            }}
+            style={{ backfaceVisibility: "hidden" }}
           >
             <img
               src={image}
@@ -122,6 +110,18 @@ export default function FlipCard({
               }}
             />
           </div>
+
+          {/* Back - Titre et description (inversé) */}
+          <div
+            className="absolute w-full h-full rounded-xl overflow-hidden bg-gradient-to-br from-indigo-600 to-purple-700 text-white flex flex-col items-center justify-center p-4"
+            style={{
+              backfaceVisibility: "hidden",
+              transform: "rotateY(180deg)",
+            }}
+          >
+            <h3 className="text-xl font-bold text-center mb-2">{title}</h3>
+            <p className="text-sm text-center opacity-90">{description}</p>
+          </div>
         </motion.div>
       </motion.div>
 
@@ -129,7 +129,7 @@ export default function FlipCard({
       <AnimatePresence>
         {showLargeImage && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 cursor-pointer"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 cursor-pointer p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -137,7 +137,7 @@ export default function FlipCard({
             onClick={closeLargeImage} // Clic sur le fond pour fermer
           >
             <motion.div
-              className="relative max-w-4xl max-h-4xl w-auto h-auto cursor-default"
+              className="relative flex items-center justify-center cursor-default"
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.5, opacity: 0 }}
@@ -156,8 +156,13 @@ export default function FlipCard({
               <img
                 src={image}
                 alt={title}
-                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                style={{ maxWidth: "90vw", maxHeight: "90vh" }}
+                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl block"
+                style={{
+                  maxWidth: "90vw",
+                  maxHeight: "80vh",
+                  width: "auto",
+                  height: "auto",
+                }}
               />
 
               {/* Info overlay */}
