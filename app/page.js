@@ -7,39 +7,47 @@ import { KEY_APIFLASH } from "@/components/config";
 // ----------------
 // Small Typewriter (no dep)
 // ----------------
+
 function Typewriter({ texts = [], speed = 80, pause = 1500, className = "" }) {
-  const [index, setIndex] = useState(0);
-  const [subIndex, setSubIndex] = useState(0);
-  const [forward, setForward] = useState(true);
+  const [index, setIndex] = useState(0); // mot courant
+  const [subIndex, setSubIndex] = useState(0); // position du curseur
+  const [forward, setForward] = useState(true); // tape (true) / efface (false)
 
   useEffect(() => {
-    if (index >= texts.length) return;
-    const timeout = setTimeout(
-      () => {
-        if (forward) {
-          if (subIndex < texts[index].length) {
-            setSubIndex((s) => s + 1);
-          } else {
-            setForward(false);
-            setTimeout(() => setForward(false), 200);
-          }
-        } else {
-          if (subIndex > 0) {
-            setSubIndex((s) => s - 1);
-          } else {
-            setForward(true);
-            setIndex((i) => (i + 1) % texts.length);
-          }
-        }
-      },
-      forward ? speed : 30
-    );
-    return () => clearTimeout(timeout);
-  }, [subIndex, index, forward, texts, speed]);
+    if (!texts.length) return;
+
+    const current = texts[index % texts.length] || "";
+    const isEnd = forward && subIndex === current.length; // mot fini d'être tapé
+    const isStart = !forward && subIndex === 0; // mot entièrement effacé
+
+    const delay =
+      isEnd || isStart
+        ? pause
+        : forward
+        ? speed
+        : Math.max(30, Math.floor(speed / 2));
+
+    const t = setTimeout(() => {
+      if (isEnd) {
+        setForward(false); // commence à effacer après la pause
+      } else if (isStart) {
+        setForward(true); // recommence à taper
+        setIndex((i) => (i + 1) % texts.length); // mot suivant
+      } else {
+        setSubIndex((s) => s + (forward ? 1 : -1));
+      }
+    }, delay);
+
+    return () => clearTimeout(t);
+  }, [texts, index, subIndex, forward, speed, pause]);
+
+  const shown = texts.length
+    ? texts[index % texts.length].slice(0, subIndex)
+    : "";
 
   return (
     <span className={className}>
-      {texts[index].substring(0, subIndex)}
+      {shown}
       <span className="inline-block w-[10px] ml-1 animate-pulse">▌</span>
     </span>
   );
@@ -110,10 +118,18 @@ const card = {
   },
 };
 
+// Palette de couleurs par catégorie
+const CATEGORY_STYLES = {
+  JavaScript: "bg-gradient-to-r from-yellow-400/70 to-yellow-500/70 text-black",
+  React: "bg-gradient-to-r from-sky-400/70 to-sky-500/70 text-black",
+  "Full Stack":
+    "bg-gradient-to-r from-purple-400/70 to-purple-500/70 text-white",
+};
+
 // ----------------
 // Card component
 // ----------------
-function ProjectCard({ project }) {
+function ProjectCard({ project, category }) {
   const image = project.link ? getScreenshot(project.link) : "";
 
   return (
@@ -130,8 +146,8 @@ function ProjectCard({ project }) {
         className="absolute inset-0 bg-center bg-cover"
         style={{
           backgroundImage: image
-            ? `linear-gradient(180deg, rgba(10,10,12,0.18), rgba(8,6,12,0.6)), url(${image})`
-            : "linear-gradient(180deg, rgba(10,10,12,0.18), rgba(8,6,12,0.6))",
+            ? `linear-gradient(180deg, rgba(10,10,12,0.55), rgba(8,6,12,0.9)), url(${image})`
+            : "linear-gradient(180deg, rgba(10,10,12,0.55), rgba(8,6,12,0.9))",
         }}
       />
 
@@ -142,26 +158,28 @@ function ProjectCard({ project }) {
       <div className="relative z-10 flex flex-col h-full p-6 justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="text-sm px-3 py-1 rounded-full bg-white/6 backdrop-blur-sm text-white/90 text-xs">
-              {project.usesAPI ? "API" : "Front"}
+            <div
+              className={`text-xs px-3 py-1 rounded-full font-medium backdrop-blur-sm ${
+                CATEGORY_STYLES[category] || "bg-gray-500/50 text-white"
+              }`}
+            >
+              {category}
             </div>
-            <h3 className="text-white font-semibold text-lg">
+            <h3 className="text-white font-bold text-lg drop-shadow-lg">
               {project.title}
             </h3>
           </div>
-          <p className="mt-3 text-sm text-white/80 line-clamp-3">
+          <p className="mt-3 text-sm text-white font-medium drop-shadow-md leading-snug line-clamp-3">
             {project.description}
           </p>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="text-xs text-white/60">Voir le projet</div>
+          <div className="text-xs text-white/80 font-semibold">
+            Voir le projet
+          </div>
           <div className="flex items-center gap-3">
-            <svg
-              className="w-5 h-5 text-white/80"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
+            <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">
               <path
                 d="M5 12h14"
                 stroke="currentColor"
@@ -183,7 +201,6 @@ function ProjectCard({ project }) {
     </motion.a>
   );
 }
-
 // ----------------
 // Main page
 // ----------------
@@ -193,13 +210,22 @@ export default function HomeRefonte() {
   const [query, setQuery] = useState("");
 
   const flattened = useMemo(() => {
-    const all = Object.values(PROJECTS_BY_CATEGORY).flat();
-    return all.map((p) => ({ ...p, image: getScreenshot(p.link) }));
+    return Object.entries(PROJECTS_BY_CATEGORY).flatMap(
+      ([category, projects]) =>
+        projects.map((p) => ({
+          ...p,
+          category,
+          image: getScreenshot(p.link),
+        }))
+    );
   }, []);
 
   const displayed = useMemo(() => {
     const base =
-      active === "All" ? flattened : PROJECTS_BY_CATEGORY[active] || [];
+      active === "All"
+        ? flattened
+        : flattened.filter((p) => p.category === active);
+
     return base.filter((p) =>
       p.title.toLowerCase().includes(query.toLowerCase())
     );
@@ -231,22 +257,16 @@ export default function HomeRefonte() {
             <h1 className="text-5xl md:text-6xl font-extrabold leading-tight">
               Arthur Fonteyne
               <div className="mt-3 text-2xl font-medium text-white/80">
-                Je construit des interfaces rapides et mémorables —{" "}
-                <Typewriter
-                  texts={[
-                    "Design & Code",
-                    "Interactions qui claquent",
-                    "Performances & accessibilité",
-                  ]}
-                />
+                En plein apprentissage du web —{" "}
+                <Typewriter texts={["JavaScript", "ReactJS", "NextJS"]} />
               </div>
             </h1>
 
-            <p className="mt-6 text-gray-300 max-w-xl leading-relaxed">
+            {/* <p className="mt-6 text-gray-300 max-w-xl leading-relaxed">
               Refondue pour faire sensation — projets présentés avec style,
               animations fluides et glassmorphism. Clique sur une catégorie pour
               filtrer les projets.
-            </p>
+            </p> */}
 
             <div className="flex gap-4 mt-8">
               <a
@@ -266,7 +286,7 @@ export default function HomeRefonte() {
             <div className="mt-8 flex gap-3 text-sm text-white/60">
               <div className="flex items-center gap-2">⚛️ React</div>
               <div className="flex items-center gap-2">🟨 JavaScript</div>
-              <div className="flex items-center gap-2">🟢 Node</div>
+              <div className="flex items-center gap-2">🟢 Next</div>
             </div>
           </div>
 
@@ -350,7 +370,11 @@ export default function HomeRefonte() {
               </div>
             ) : (
               displayed.map((project, i) => (
-                <ProjectCard key={i} project={project} />
+                <ProjectCard
+                  key={i}
+                  project={project}
+                  category={project.category}
+                />
               ))
             )}
           </motion.div>
@@ -370,21 +394,21 @@ export default function HomeRefonte() {
             <div className="flex gap-4 justify-around md:justify-center">
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-400">JS</div>
-                <div className="text-sm text-white/60">Vanilla / ESNext</div>
+                <div className="text-sm text-white/60">Vanilla</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-cyan-400">React</div>
                 <div className="text-sm text-white/60">Components & hooks</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-emerald-400">Node</div>
-                <div className="text-sm text-white/60">API & backend</div>
+                <div className="text-3xl font-bold text-emerald-400">Next</div>
+                <div className="text-sm text-white/60">FullStack</div>
               </div>
             </div>
 
             <div className="text-right">
               <a
-                href="mailto:hello@example.com"
+                href="mailto:fonteyne.arthur@gmail.com"
                 className="inline-flex items-center gap-3 rounded-full px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500"
               >
                 Contacte moi
@@ -395,7 +419,7 @@ export default function HomeRefonte() {
 
         {/* FOOTER */}
         <footer className="mt-12 text-center text-white/50 text-sm">
-          © {new Date().getFullYear()} Arthur — Built with ❤️ and some crazy CSS
+          © {new Date().getFullYear()} Arthur — ❤️
         </footer>
       </div>
 
