@@ -299,7 +299,8 @@ export default function HomeRefonte() {
                     Exemples de projets
                   </div>
                   <div className="text-sm">
-                    Survolez les cartes pour voir l'effet — clique pour ouvrir
+                    Survolez les cartes pour voir l&apos;effet — clique pour
+                    ouvrir
                   </div>
                 </div>
               </div>
