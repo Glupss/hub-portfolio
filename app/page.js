@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { KEY_APIFLASH } from "@/components/config";
+import { KEY_APIFLASH } from "../components/config";
 
 // ----------------
 // Small Typewriter (no dep)
