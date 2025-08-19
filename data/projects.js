@@ -14,10 +14,31 @@ export const PROJECTS_BY_CATEGORY = {
       usesAPI: false,
     },
     {
+      title: "Bankist",
+      description:
+        "App bancaire pour travailler sur les array et toujours la manipulation de DOM",
+      link: "https://bankist-arthur.netlify.app/",
+      usesAPI: false,
+    },
+    {
+      title: "LP Bankist",
+      description:
+        "Landing page pour l'application précédente avec des lazy loadings, des modals des softs scrolls, etc...",
+      link: "https://bankist-lp-arthur.netlify.app/",
+      usesAPI: false,
+    },
+    {
       title: "Mapty",
       description:
-        "App qui utilise des APIs et geolocation pour tracker des workouts.",
+        "App qui utilise des APIs et geolocation pour tracker des workouts avec une sauvegarde dans le browser en local.",
       link: "https://mapty-arthur.netlify.app/",
+      usesAPI: true,
+    },
+    {
+      title: "Forkify",
+      description:
+        "App de recette de cuisine: on, peut rechercher dans une API nimporte quelle recette, et elle viendra s'afficher correctement,  on peut ajouter nous meme des recettes et bookmark celles qu'on apprécie avec sauvegarde en local dans le browser",
+      link: "https://forkifyarthur.netlify.app/",
       usesAPI: true,
     },
   ],
