@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { KEY_APIFLASH } from "@/components/config";
 
 // ----------------
-// Small Typewriter (no dep)
+// Small Typewriter
 // ----------------
 
 function Typewriter({ texts = [], speed = 80, pause = 1500, className = "" }) {
@@ -54,7 +54,7 @@ function Typewriter({ texts = [], speed = 80, pause = 1500, className = "" }) {
 }
 
 // ----------------
-// Screenshot helper (uses your config key)
+// Screenshot helper
 // ----------------
 const getScreenshot = (url) => {
   const apiKey = KEY_APIFLASH || process.env.NEXT_PUBLIC_APIFLASH;
@@ -65,7 +65,7 @@ const getScreenshot = (url) => {
 };
 
 // ----------------
-// Sample projects (kept from your data but can be replaced by your data source)
+// Sample projects
 // ----------------
 const PROJECTS_BY_CATEGORY = {
   JavaScript: [
