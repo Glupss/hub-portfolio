@@ -16,7 +16,7 @@ export const PROJECTS_BY_CATEGORY = {
     {
       title: "Bankist",
       description:
-        "App bancaire pour travailler sur les array et toujours la manipulation de DOM",
+        "App bancaire pour travailler sur les array et toujours la manipulation de DOM   \n User: js:1111 /// User: jd:2222 \n User: stw:3333 /// User:  ss:4444",
       link: "https://bankist-arthur.netlify.app/",
       usesAPI: false,
     },
