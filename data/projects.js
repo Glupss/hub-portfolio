@@ -44,6 +44,13 @@ export const PROJECTS_BY_CATEGORY = {
   ],
   React: [
     {
+      title: "usePopcorn",
+      description:
+        "App de tracking de films sur une API avec sauvegarde en locale",
+      link: "https://arthur-usepopcorn.netlify.app/",
+      usesAPI: true,
+    },
+    {
       title: "Portfolio React",
       description: "La version React de mon portfolio (travail en cours).",
       link: "https://portfolio-arthur-js.netlify.app/",
