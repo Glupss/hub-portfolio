@@ -44,6 +44,12 @@ export const PROJECTS_BY_CATEGORY = {
   ],
   React: [
     {
+      title: "Travel list",
+      description: "Checklist pour partir en vacance!",
+      link: "https://arthur-travel-list.netlify.app/",
+      usesAPI: false,
+    },
+    {
       title: "usePopcorn",
       description:
         "App de tracking de films sur une API avec sauvegarde en locale",
